@@ -8,6 +8,7 @@ function createStructure() {
 
   title.textContent = 'Rick and Morty Explorer';
   statusApp.classList.add('mensaje');
+  statusApp.setAttribute('aria-live', 'polite');
   charactersList.classList.add('lista-personajes');
 
   app.append(header, statusApp, charactersList);
@@ -15,14 +16,16 @@ function createStructure() {
 }
 
 async function getData() {
-  try {
+  try {    
+    statusApp.textContent = 'Cargando...';
     const res = await fetch('https://rickandmortyapi.com/api/character');
-    const data = await res.json();
-
+    const data = await res.json();    
+    
     const characters = data.results;
     const charactersData = transformData(characters);
 
-    drawCharacters(charactersData);     
+    drawCharacters(charactersData);
+    statusApp.textContent = '';
 
   } catch (error) {
     console.error(error);
