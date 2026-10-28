@@ -19,6 +19,9 @@ async function getData() {
   try {    
     statusApp.textContent = 'Cargando...';
     const res = await fetch('https://rickandmortyapi.com/api/character');
+
+    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+    
     const data = await res.json();    
     
     const characters = data.results;
@@ -28,7 +31,8 @@ async function getData() {
     statusApp.textContent = '';
 
   } catch (error) {
-    console.error(error);
+    console.error('Error: ', error);
+    statusApp.textContent = 'No se han podido cargar los personajes';
   }
 }
 
