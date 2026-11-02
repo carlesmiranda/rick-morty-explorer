@@ -1,5 +1,6 @@
 const charactersList = document.createElement('ul');
 const statusApp = document.createElement('p');
+const API_URL = 'https://rickandmortyapi.com/api/character'
 
 
 function createStructure() {
@@ -19,7 +20,7 @@ function createStructure() {
   buscador.setAttribute('id', 'buscador');
   labelForm.setAttribute('for', 'buscador');
   labelForm.textContent = 'Busca un personaje';
-  buscarBtn.setAttribute('type', 'search');
+  buscarBtn.setAttribute('type', 'submit');
   buscarBtn.textContent = 'Buscar';
 
   app.append(header, form ,statusApp, charactersList);
@@ -29,14 +30,17 @@ function createStructure() {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const characterSearch = buscador.value.trim();
-    console.log(characterSearch);
+    getData(characterSearch);
   } )
 }
 
-async function getData() {
+async function getData(character = '') {
   try {    
+    const encodedName= encodeURIComponent(character);
     statusApp.textContent = 'Cargando...';
-    const res = await fetch('https://rickandmortyapi.com/api/character');
+    
+    const url = encodedName !== '' ? `${API_URL}?name=${encodedName}` : API_URL;
+    const res = await fetch(url);
 
     if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
     
