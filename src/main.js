@@ -1,18 +1,36 @@
 const charactersList = document.createElement('ul');
 const statusApp = document.createElement('p');
 
+
 function createStructure() {
   const app = document.querySelector('.app');
   const header = document.createElement('header');
   const title = document.createElement('h1');  
+  const labelForm = document.createElement('label'); 
+  const buscarBtn = document.createElement('button');
+  const form = document.createElement('form');
+  const buscador = document.createElement('input');
 
   title.textContent = 'Rick and Morty Explorer';
   statusApp.classList.add('mensaje');
   statusApp.setAttribute('aria-live', 'polite');
   charactersList.classList.add('lista-personajes');
+  buscador.setAttribute('type', 'search');
+  buscador.setAttribute('id', 'buscador');
+  labelForm.setAttribute('for', 'buscador');
+  labelForm.textContent = 'Busca un personaje';
+  buscarBtn.setAttribute('type', 'search');
+  buscarBtn.textContent = 'Buscar';
 
-  app.append(header, statusApp, charactersList);
-  header.append(title);  
+  app.append(header, form ,statusApp, charactersList);
+  header.append(title);
+  form.append(labelForm, buscador, buscarBtn);
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const characterSearch = buscador.value.trim();
+    console.log(characterSearch);
+  } )
 }
 
 async function getData() {
@@ -77,6 +95,8 @@ function drawCharacters(characters) {
     charactersList.append(createCard(c));    
   });
 }
+
+
 
 createStructure();
 getData();
