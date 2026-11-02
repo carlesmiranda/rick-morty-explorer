@@ -42,6 +42,12 @@ async function getData(character = '') {
     const url = encodedName !== '' ? `${API_URL}?name=${encodedName}` : API_URL;
     const res = await fetch(url);
 
+    if (res.status === 404) {
+      charactersList.replaceChildren();    
+      statusApp.textContent = 'No se han encontrado personajes'
+      return;
+    }
+
     if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
     
     const data = await res.json();    
@@ -55,7 +61,7 @@ async function getData(character = '') {
   } catch (error) {
     console.error('Error: ', error);
     statusApp.textContent = 'No se han podido cargar los personajes';
-  }
+  }  
 }
 
 function transformData(results) {
