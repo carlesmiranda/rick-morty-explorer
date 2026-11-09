@@ -1,5 +1,6 @@
 const charactersList = document.createElement('ul');
 const statusApp = document.createElement('p');
+const resumen = document.createElement('p');
 const API_URL = 'https://rickandmortyapi.com/api/character'
 
 
@@ -37,6 +38,7 @@ function createStructure() {
   title.textContent = 'Rick and Morty Explorer';
   statusApp.classList.add('mensaje');
   statusApp.setAttribute('aria-live', 'polite');
+  resumen.classList.add('resumen');
   charactersList.classList.add('lista-personajes');
   buscador.setAttribute('type', 'search');
   buscador.setAttribute('id', 'buscador');
@@ -56,7 +58,7 @@ function createStructure() {
     select.append(optionElement);
   });
 
-  app.append(header, form ,statusApp, charactersList);
+  app.append(header, form ,statusApp, resumen ,charactersList);
   header.append(title);
   form.append(labelForm, buscador, labelFilter, select, buscarBtn);
   
@@ -71,19 +73,20 @@ function createStructure() {
 async function getData(name = '', status= '') {
   try {      
     statusApp.textContent = 'Cargando...';
+    resumen.textContent = '';
 
     const params = new URLSearchParams();
     if (name) params.append('name', name);
     if (status) params.append('status', status);
 
     const query = params.toString();
-    const url = query ? `${API_URL}?${query}` : `${API_URL}`;    
+    const url = query ? `${API_URL}?${query}` : API_URL;    
     
     const res = await fetch(url);
 
     if (res.status === 404) {
       charactersList.replaceChildren();    
-      statusApp.textContent = 'No se han encontrado personajes'
+      statusApp.textContent = 'No se han encontrado personajes';      
       return;
     }
 
@@ -95,7 +98,11 @@ async function getData(name = '', status= '') {
     const charactersData = transformData(characters);
 
     drawCharacters(charactersData);
+    const contadorPorEstado = contarPorEstado(charactersData);
+    mostrarResumen(contadorPorEstado);
+
     statusApp.textContent = '';
+    
 
   } catch (error) {
     console.error('Error: ', error);
@@ -145,7 +152,16 @@ function drawCharacters(characters) {
   });
 }
 
+function contarPorEstado(personajes) {
+  return personajes.reduce((acc, p) => {
+    acc[p.status] = (acc[p.status] || 0) + 1;   
+    return acc;
+  }, {});  
+}
 
+function mostrarResumen(conteo) {
+  resumen.textContent = `En esta página: ${conteo.Alive || 0} vivos · ${conteo.Dead || 0} muertos · ${conteo.unknown || 0} desconocidos`
+}
 
 createStructure();
 getData();
