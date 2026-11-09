@@ -12,6 +12,28 @@ function createStructure() {
   const form = document.createElement('form');
   const buscador = document.createElement('input');
 
+  const labelFilter = document.createElement('label');
+  const select = document.createElement('select');
+  
+  const options = [
+    {
+      value: '',
+      label: 'Todos'
+    },
+    {
+      value: 'alive',
+      label: 'Vivos'
+    },
+    {
+      value: 'dead',
+      label: 'Muertos'
+    },
+    {
+      value: 'unknown',
+      label: 'Desconocido'
+    },
+  ];
+
   title.textContent = 'Rick and Morty Explorer';
   statusApp.classList.add('mensaje');
   statusApp.setAttribute('aria-live', 'polite');
@@ -23,23 +45,40 @@ function createStructure() {
   buscarBtn.setAttribute('type', 'submit');
   buscarBtn.textContent = 'Buscar';
 
+  labelFilter.setAttribute('for', 'filter');
+  labelFilter.textContent = 'Estado'
+  select.setAttribute('id', 'filter');
+
+  options.forEach(o => {
+    const optionElement = document.createElement('option');
+    optionElement.value = o.value;
+    optionElement.textContent = o.label;
+    select.append(optionElement);
+  });
+
   app.append(header, form ,statusApp, charactersList);
   header.append(title);
-  form.append(labelForm, buscador, buscarBtn);
-
+  form.append(labelForm, buscador, labelFilter, select, buscarBtn);
+  
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const characterSearch = buscador.value.trim();
-    getData(characterSearch);
+    const estado = select.value;
+    getData(characterSearch, estado);
   } )
 }
 
-async function getData(character = '') {
-  try {    
-    const encodedName= encodeURIComponent(character);
+async function getData(name = '', status= '') {
+  try {      
     statusApp.textContent = 'Cargando...';
+
+    const params = new URLSearchParams();
+    if (name) params.append('name', name);
+    if (status) params.append('status', status);
+
+    const query = params.toString();
+    const url = query ? `${API_URL}?${query}` : `${API_URL}`;    
     
-    const url = encodedName !== '' ? `${API_URL}?name=${encodedName}` : API_URL;
     const res = await fetch(url);
 
     if (res.status === 404) {
