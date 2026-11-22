@@ -1,6 +1,6 @@
 const charactersList = document.createElement('ul');
 const statusApp = document.createElement('p');
-const resumen = document.createElement('p');
+const summary = document.createElement('p');
 const API_URL = 'https://rickandmortyapi.com/api/character'
 
 
@@ -9,9 +9,9 @@ function createStructure() {
   const header = document.createElement('header');
   const title = document.createElement('h1');  
   const labelForm = document.createElement('label'); 
-  const buscarBtn = document.createElement('button');
+  const searchBtn = document.createElement('button');
   const form = document.createElement('form');
-  const buscador = document.createElement('input');
+  const searchInput = document.createElement('input');
 
   const labelFilter = document.createElement('label');
   const select = document.createElement('select');
@@ -19,36 +19,36 @@ function createStructure() {
   const options = [
     {
       value: '',
-      label: 'Todos'
+      label: 'All'
     },
     {
       value: 'alive',
-      label: 'Vivos'
+      label: 'Alive'
     },
     {
       value: 'dead',
-      label: 'Muertos'
+      label: 'Dead'
     },
     {
       value: 'unknown',
-      label: 'Desconocido'
+      label: 'Unknown'
     },
   ];
 
   title.textContent = 'Rick and Morty Explorer';
-  statusApp.classList.add('mensaje');
+  statusApp.classList.add('message');
   statusApp.setAttribute('aria-live', 'polite');
-  resumen.classList.add('resumen');
-  charactersList.classList.add('lista-personajes');
-  buscador.setAttribute('type', 'search');
-  buscador.setAttribute('id', 'buscador');
-  labelForm.setAttribute('for', 'buscador');
-  labelForm.textContent = 'Busca un personaje';
-  buscarBtn.setAttribute('type', 'submit');
-  buscarBtn.textContent = 'Buscar';
+  summary.classList.add('summary');
+  charactersList.classList.add('characters-list');
+  searchInput.setAttribute('type', 'search');
+  searchInput.setAttribute('id', 'searchInput');
+  labelForm.setAttribute('for', 'searchInput');
+  labelForm.textContent = 'Search a character';
+  searchBtn.setAttribute('type', 'submit');
+  searchBtn.textContent = 'Search';
 
   labelFilter.setAttribute('for', 'filter');
-  labelFilter.textContent = 'Estado'
+  labelFilter.textContent = 'Status'
   select.setAttribute('id', 'filter');
 
   options.forEach(o => {
@@ -58,22 +58,22 @@ function createStructure() {
     select.append(optionElement);
   });
 
-  app.append(header, form ,statusApp, resumen ,charactersList);
+  app.append(header, form ,statusApp, summary ,charactersList);
   header.append(title);
-  form.append(labelForm, buscador, labelFilter, select, buscarBtn);
+  form.append(labelForm, searchInput, labelFilter, select, searchBtn);
   
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    const characterSearch = buscador.value.trim();
-    const estado = select.value;
-    getData(characterSearch, estado);
+    const characterSearch = searchInput.value.trim();
+    const status = select.value;
+    getData(characterSearch, status);
   } )
 }
 
 async function getData(name = '', status= '') {
   try {      
-    statusApp.textContent = 'Cargando...';
-    resumen.textContent = '';
+    statusApp.textContent = 'Loading...';
+    summary.textContent = '';
 
     const params = new URLSearchParams();
     if (name) params.append('name', name);
@@ -86,7 +86,7 @@ async function getData(name = '', status= '') {
 
     if (res.status === 404) {
       charactersList.replaceChildren();    
-      statusApp.textContent = 'No se han encontrado personajes';      
+      statusApp.textContent = 'No characters found';      
       return;
     }
 
@@ -98,15 +98,15 @@ async function getData(name = '', status= '') {
     const charactersData = transformData(characters);
 
     drawCharacters(charactersData);
-    const contadorPorEstado = contarPorEstado(charactersData);
-    mostrarResumen(contadorPorEstado);
+    const counterByStatus = countByStatus(charactersData);
+    displaySummary(counterByStatus);
 
     statusApp.textContent = '';
     
 
   } catch (error) {
     console.error('Error: ', error);
-    statusApp.textContent = 'No se han podido cargar los personajes';
+    statusApp.textContent = 'Could not load characters';
   }  
 }
 
@@ -124,14 +124,14 @@ function transformData(results) {
 
 
 function createCard(characterData) {  
-  //Crear
+  //Create elements
   const card = document.createElement('li');
   const name = document.createElement('h2');
   const status = document.createElement('p');
   const species = document.createElement('p');
   const img = document.createElement('img');
 
-  //Rellenar
+  //Add classes and content
   card.classList.add('card');
   img.src = characterData.image;
   img.alt = characterData.name;
@@ -139,7 +139,7 @@ function createCard(characterData) {
   status.textContent = `Status: ${characterData.status}`;
   species.textContent = `Species: ${characterData.species}`;
 
-  //Meter los hijos dentro del contenedor
+  //Append elements to card
   card.append(img, name, status, species);
   
   return card;  
@@ -152,15 +152,15 @@ function drawCharacters(characters) {
   });
 }
 
-function contarPorEstado(personajes) {
-  return personajes.reduce((acc, p) => {
-    acc[p.status] = (acc[p.status] || 0) + 1;   
+function countByStatus(characters) {
+  return characters.reduce((acc, c) => {
+    acc[c.status] = (acc[c.status] || 0) + 1;
     return acc;
   }, {});  
 }
 
-function mostrarResumen(conteo) {
-  resumen.textContent = `En esta página: ${conteo.Alive || 0} vivos · ${conteo.Dead || 0} muertos · ${conteo.unknown || 0} desconocidos`
+function displaySummary(count) {
+  summary.textContent = `On this page: ${count.Alive || 0} alive · ${count.Dead || 0} dead · ${count.unknown || 0} unknown`
 }
 
 createStructure();
