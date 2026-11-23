@@ -1,4 +1,5 @@
 # Rick and Morty Explorer
+<img width="1464" height="949" alt="Screenshot 2026-11-23 at 18 12 12" src="https://github.com/user-attachments/assets/67a5310b-6bce-4aad-90c1-42b7825ceed8" />
 
 A small vanilla JavaScript app to search and explore characters from the [Rick and Morty API](https://rickandmortyapi.com/).
 
