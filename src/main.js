@@ -1,3 +1,5 @@
+import './style.css';
+
 const charactersList = document.createElement('ul');
 const statusApp = document.createElement('p');
 const summary = document.createElement('p');
